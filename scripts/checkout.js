@@ -1,22 +1,22 @@
-import {cart,removeFromCart} from "..//scripts//cart.js"
-import {products} from "..//data//products.js"
+import {cart,removeFromCart,calculateCartQuantity} from "../Scripts//cart.js"
+import {products} from "../data//products.js"
 
 let cartItemHtml = ""
 cart.forEach((cartItem)=>{
-    let productId = cartItem.productId
 
-    let matchingProduct
+let productId = cartItem.productId
 
-    products.forEach((product)=>{
-      if(product.id === productId){
-        matchingProduct = product
-      }
-    })
-   
+let matchingProduct
 
-   
+products.forEach((product)=>{
+    if(product.id === productId){
+       matchingProduct = product 
+    }
+})
 
-cartItemHtml +=    ` <div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
+
+cartItemHtml += ` 
+            <div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
             <div class="delivery-date">
               Delivery date: Tuesday, June 21
             </div>
@@ -34,13 +34,15 @@ cartItemHtml +=    ` <div class="cart-item-container js-cart-item-container-${ma
                 </div>
                 <div class="product-quantity">
                   <span>
-                    Quantity: <span class="quantity-label">1</span>
+                    Quantity: <span class="quantity-label">2</span>
                   </span>
-                  <span class="update-quantity-link link-primary">
+                  <span class="update-quantity-link link-primary js-update-link"
+              data-product-id="${matchingProduct.id}">
                     Update
                   </span>
-                  <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${
-                    matchingProduct.id}">
+                  <input class="quantity-input">
+            <span class="save-quantity-link link-primary">Save</span>
+                  <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${matchingProduct.id}">
                     Delete
                   </span>
                 </div>
@@ -53,7 +55,7 @@ cartItemHtml +=    ` <div class="cart-item-container js-cart-item-container-${ma
                 <div class="delivery-option">
                   <input type="radio" checked
                     class="delivery-option-input"
-                    name="delivery-option-${matchingProduct.id}">
+                    name="${matchingProduct.id}">
                   <div>
                     <div class="delivery-option-date">
                       Tuesday, June 21
@@ -66,7 +68,7 @@ cartItemHtml +=    ` <div class="cart-item-container js-cart-item-container-${ma
                 <div class="delivery-option">
                   <input type="radio"
                     class="delivery-option-input"
-                    name="delivery-option-${matchingProduct.id}">
+                    name="${matchingProduct.id}">
                   <div>
                     <div class="delivery-option-date">
                       Wednesday, June 15
@@ -79,7 +81,7 @@ cartItemHtml +=    ` <div class="cart-item-container js-cart-item-container-${ma
                 <div class="delivery-option">
                   <input type="radio"
                     class="delivery-option-input"
-                    name="delivery-option-${matchingProduct.id}">
+                    name="${matchingProduct.id}">
                   <div>
                     <div class="delivery-option-date">
                       Monday, June 13
@@ -92,21 +94,43 @@ cartItemHtml +=    ` <div class="cart-item-container js-cart-item-container-${ma
               </div>
             </div>
           </div>
-        `
-        document.querySelector(`.js-order-summary`).innerHTML = cartItemHtml
-})
+          `
+          document.querySelector(`.js-order-summary`).innerHTML = cartItemHtml
+        })
 
+       
 
 document.querySelectorAll(`.js-delete-link`)
 .forEach((link)=>{
  link.addEventListener(`click`,()=>{
+
  let productId = link.dataset.productId;
+ 
  removeFromCart(productId)
- let cartproducts  = document.querySelector(`.js-cart-item-container-${productId}`)
- cartproducts.remove()
+  let cartproducts = document.querySelector(`.js-cart-item-container-${productId}`)
+  cartproducts.remove()
+  UpdateCartQuantity()
  })
 })
 
 
 
+function UpdateCartQuantity(){
 
+const cartQuantity = calculateCartQuantity();
+
+document.querySelector('.js-return-to-home-link')
+  .innerHTML = `${cartQuantity} items`;
+}
+UpdateCartQuantity()
+
+document.querySelectorAll('.js-update-link')
+  .forEach((link) => {
+    link.addEventListener('click', () => {
+      const productId = link.dataset.productId;
+      const container = document.querySelector(
+        `.js-cart-item-container-${productId}`
+      );
+      container.classList.add('is-editing-quantity');
+    });
+  });

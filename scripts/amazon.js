@@ -1,13 +1,12 @@
-import { cart, addtocart } from "../scripts/cart.js";
-import { products } from "../data/products.js";
+import {products} from "../data/products.js"
+import {cart,addtoCart,calculateCartQuantity} from "../Scripts/cart.js"
 
-let productHTML = "";
-products.forEach((product) => {
-  productHTML += `
-   <div class="product-container">
+let productHtml = ""
+products.forEach((product)=>{
+ let html = ` <div class="product-container">
           <div class="product-image-container">
             <img class="product-image"
-              src= ${product.image}>
+              src="${product.image}">
           </div>
 
           <div class="product-name limit-text-to-2-lines">
@@ -16,14 +15,14 @@ products.forEach((product) => {
 
           <div class="product-rating-container">
             <img class="product-rating-stars"
-              src="images/ratings/rating-${product.rating.stars * 10}.png">
+              src="images/ratings/rating-${product.rating.stars *10}.png">
             <div class="product-rating-count link-primary">
               ${product.rating.count}
             </div>
           </div>
 
           <div class="product-price">
-            $${(product.priceCents / 100).toFixed(2)}
+            $${(product.priceCents /100).toFixed(2)}
           </div>
 
           <div class="product-quantity-container">
@@ -48,48 +47,46 @@ products.forEach((product) => {
             Added
           </div>
 
-          <button class="add-to-cart-button button-primary js-add-to-cart" data-product-id="${
-            product.id
-          }">
+          <button class="add-to-cart-button button-primary js-add-to-cart" data-product-id="${product.id}">
             Add to Cart
           </button>
-        </div>
-  `;
+        </div>`
 
-  document.querySelector(`.js-products-grid`).innerHTML = productHTML;
-});
+        productHtml += html
+        document.querySelector(`.js-products-grid`).innerHTML = productHtml
+})
 
 
-function updateCartQuantity() {
-  let cartQuantity = 0;
-  cart.forEach((item) => {
-    cartQuantity += item.quantity;
-  });
-  document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+function UpdateCartQuantity(){
+  let cartQuantity = calculateCartQuantity();
+     document.querySelector(`.js-cart-quantity`).innerHTML = cartQuantity
 }
+UpdateCartQuantity()
+
+document.querySelectorAll(`.js-add-to-cart`)
+.forEach((button)=>{
+  let addedMessageTimeoutId
+  button.addEventListener(`click`,()=>{
+   let productId = button.dataset.productId
+
+   addtoCart(productId)
+   UpdateCartQuantity()
 
 
 
-document.querySelectorAll(".js-add-to-cart").forEach((button) => {
-  let addedMessageTimeoutId;
-  button.addEventListener("click", () => {
-    const productId = button.dataset.productId;
-    console.log(productId)
-    addtocart(productId);
-    updateCartQuantity();
+   let addedMessage = document.querySelector(`.js-added-to-cart-${productId}`)
+   addedMessage.classList.add(`added-to-cart-visible`)
 
-    let addedMessage = document.querySelector(`.js-added-to-cart-${productId}`);
+   if(addedMessageTimeoutId){
+    clearTimeout(addedMessageTimeoutId)
+   }
 
-    addedMessage.classList.add("added-to-cart-visible");
+  let timeout = setTimeout(()=>{
+    addedMessage.classList.remove(`added-to-cart-visible`)
+   },2000)
 
-    if (addedMessageTimeoutId) {
-      clearTimeout(addedMessageTimeoutId);
-    }
+   addedMessageTimeoutId = timeout
 
-    let timeoutId = setTimeout(() => {
-      addedMessage.classList.remove("added-to-cart-visible");
-    }, 2000);
+})
+})
 
-    addedMessageTimeoutId = timeoutId;
-  });
-});
