@@ -1,6 +1,6 @@
 export let cart = [{
   productId:`e43638ce-6aa0-4b85-b27f-e1d07eb678c6`,
-  quantity:2,
+  quantity:1,
 },{
   productId:`id2`,
   quantity:2,
@@ -36,7 +36,7 @@ export function removeFromCart(productId){
   let newcart = []
 
   cart.forEach((cartItem)=>{
-     if(cartItem.productId !== productId ){
+     if(cartItem.productId !== productId){
       newcart.push(cartItem)
      }
   })
@@ -52,4 +52,17 @@ cart.forEach((cartItem) => {
 });
 
 return cartQuantity;
+}
+
+
+export function updateQuantity(productId, newQuantity) {
+let matchingItem;
+
+cart.forEach((cartItem) => {
+  if (productId === cartItem.productId) {
+    matchingItem = cartItem;
+  }
+});
+
+matchingItem.quantity = newQuantity;
 }
